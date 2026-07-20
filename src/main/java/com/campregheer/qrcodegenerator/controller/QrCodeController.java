@@ -11,10 +11,9 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/qrcode")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS})
 public class QrCodeController {
     private final QrCodeGeneratorService qrCodeGeneratorService;
-
     public QrCodeController(QrCodeGeneratorService qrCodeGeneratorService){
         this.qrCodeGeneratorService = qrCodeGeneratorService;
     }

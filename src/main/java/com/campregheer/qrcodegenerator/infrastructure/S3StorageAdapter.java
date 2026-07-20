@@ -14,8 +14,8 @@ public class S3StorageAdapter implements StoragePort {
     private final String bucketName;
     private final String region;
 
-    public S3StorageAdapter(@Value("${aws.s3.region}") String region,
-                            @Value("${aws.s3.bucket-name}") String bucketName) {
+    public S3StorageAdapter(@Value("${aws.s3.region:us-east-1}") String region,
+                            @Value("${aws.s3.bucket-name:dummy-bucket}") String bucketName) {
         this.bucketName = bucketName;
         this.region = region;
         this.s3Client = S3Client.builder()
@@ -25,14 +25,19 @@ public class S3StorageAdapter implements StoragePort {
 
     @Override
     public String uploadFile(byte[] fileData, String fileName, String contentType) {
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(fileName)
-                .contentType(contentType)
-                .build();
+        try {
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .contentType(contentType)
+                    .build();
 
-        s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileData));
-        return String.format("https://%s.s3.%s.amazonaws.com/%s",
-                bucketName, region, fileName);
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileData));
+            return String.format("https://%s.s3.%s.amazonaws.com/%s",
+                    bucketName, region, fileName);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            throw exception;
+        }
     }
 }

@@ -1,15 +1,20 @@
 
 import axios from "axios";
-import dotenv from "dotenv";
 
-dotenv.config();
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
+export interface QrCodeResponse {
+    url: string;
+}
 
 export const api = axios.create({
-    baseURL: process.env.API_URL || "http://localhost:8080",
+    baseURL: API_BASE_URL,
+    headers: {
+        "Content-Type": "application/json",
+    },
 });
 
-export const postQrCode = async (text: string) => {
-    const response = await api.post('/qrcode', { text });
-    console.log(response.data);
-    
+export const postQrCode = async (text: string): Promise<QrCodeResponse> => {
+    const response = await api.post<QrCodeResponse>("/qrcode", { text });
+    return response.data;
 };
